@@ -11,15 +11,10 @@ set.seed(1234)
 
 plan("multiprocess", workers = 4)
 options(future.globals.maxSize = 200000 * 1024^2) # for 200 Gb RAM
-dir="/tank/data2/cw/backup/rawdata/BP/"
-setwd("/tank/data2/yuejun/placental/integrate/")
-#files=list.files(dir)
-filenames=read.table("/tank/data2/yuejun/placental/integrate/sample.id",sep="\t",header=F)
-files=filenames$V1
-#files=list.files()
-#files=list.files(pattern="ARK.*")
-#files=read.table("/mnt/gene/Labshare/Rawdata/cr_output/placenta/multiome_cr/BP/ids",sep="\t",header=F)
-#files=files$V1
+dir="/path/to/cellranger/output/"
+wdir="/path/to/workdir/"
+setwd(wdir)
+files=list.files(dir)
 bc=list()
 metric_list=list()
 fragment_list=list()
@@ -37,8 +32,6 @@ for ( i in 1:length(files)){
 combined.peaks=reduce(do.call(c,gr))
 peakwidths <- width(combined.peaks)
 combined.peaks <- combined.peaks[peakwidths  < 10000 & peakwidths > 20]
-#saveRDS(combined.peaks,"/mnt/gene/Labshare/multiome_placenta_processed/rds/peaks_all_BP_DEC.rds")
-#combined.peaks=readRDS("/mnt/data/scatac_wjg/cr_output/brain/analysis/rds/combinepeaks.rds")
 
 for (i in 1:length(files)){
         bc[[i]]=read.table(gzfile(paste0(dir,files[i],"/outs/filtered_feature_bc_matrix/barcodes.tsv.gz")),header=F)
@@ -72,8 +65,6 @@ for (i in 1: length(files)){
 	obj_list[[i]]=RenameCells(obj_list[[i]],new.names=paste(obj_list[[i]]@meta.data$dataset,obj_list[[i]]@meta.data$BC,sep="_"))
 }
 combined <- merge(x = obj_list[[1]],y = obj_list[2:length(files)])
-
-
 combined <- FindTopFeatures(combined, min.cutoff = 10)
 combined <- RunTFIDF(combined)
 combined <- RunSVD(combined)
@@ -81,6 +72,5 @@ combined <- RunUMAP(combined, reduction = "lsi", dims = 2:30)
 integration.anchors <- FindIntegrationAnchors(object.list = obj_list,anchor.features = rownames(combined),reduction = "rlsi",dims = 2:30)
 integrated <- IntegrateEmbeddings(anchorset = integration.anchors,reductions = combined[["lsi"]],new.reduction.name = "integrated_lsi",dims.to.integrate = 1:30,k.weights=100)
 integrated <- RunUMAP(integrated, reduction = "integrated_lsi", dims = 2:50)
-#saveRDS(combined.peaks,"/mnt/data/scatac_wjg/cr_output/placenta/rds/atac_peaks.rds")
-saveRDS(integrated,"ATAC.rds")
+saveRDS(integrated,"integrated_ATAC.rds")
 
