@@ -21,12 +21,12 @@ seu <- AddMotifs(
   pfm = pfm
 )
 
-##chromvar
+##Motif activity by chromVar
 seu <- RunChromVAR(
   object = seu,
   genome = BSgenome.Hsapiens.UCSC.hg38
 )
-# Footprinting
+# TF Footprinting by Signac
 features=c("TP63","GATA3","SPI1", "RUNX2")
 seu <- Footprint(
   object = seu,
