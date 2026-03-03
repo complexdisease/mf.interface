@@ -4,23 +4,23 @@
 suppressPackageStartupMessages(library("argparse"))
 parser <- ArgumentParser()
 library(CopyscAT)
+library(stringr)
 library(BSgenome.Hsapiens.UCSC.hg38)
-#parser$add_argument("--id", default=NULL,type='character',help="output_ID")
+parser$add_argument("--id", default=NULL,type='character',help="output_ID")
 parser$add_argument("-o","--outdir",default=NULL,type='character',help="output_dir")
 args <- parser$parse_args()
 
 
 #use it to save references - this will create a genome chrom.sizes file, a cytobands file and a CpG file
-#NOTE: updated 21-Oct-2021 with a fallback to the REST API
-#generateReferences(BSgenome.Hsapiens.UCSC.hg38,genomeText = "hg38",tileWidth = 1e6,outputDir = "~")
+generateReferences(BSgenome.Hsapiens.UCSC.hg38,genomeText = "hg38",tileWidth = 1e6,outputDir = "~")
 DIR=args$outdir
 setwd(DIR)
 ID=args$id
 ##### REGULAR WORKFLOW #####
 #initialize the environment (note: this needs to be done with every session in which you run Copy-scAT)
-initialiseEnvironment(genomeFile="/mnt/data1/genome/copyscat_reference/hg38_chrom_sizes.tsv",
-                      cytobandFile="/mnt/data1/genome/copyscat_reference/hg38_1e+06_cytoband_densities_granges.tsv",
-                      cpgFile="/mnt/data1/genome/copyscat_reference/hg38_1e+06_cpg_densities.tsv",
+initialiseEnvironment(genomeFile="/path/to/reference/copyscat_reference/hg38_chrom_sizes.tsv",
+                      cytobandFile="/path/to/reference//copyscat_reference/hg38_1e+06_cytoband_densities_granges.tsv",
+                      cpgFile="/path/to/reference/copyscat_reference/hg38_1e+06_cpg_densities.tsv",
                       binSize=1e6,
                       minFrags=1e4,
                       cellSuffix=c("-1","-2"),
