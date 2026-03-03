@@ -41,12 +41,12 @@ counts <- FeatureMatrix(fragments = Fragments(atac),features = enhancers,cells =
 
 annotation <- GetGRangesFromEnsDb(ensdb = EnsDb.Hsapiens.v86) ## Genome annotation
 seqlevelsStyle(annotation) <- "UCSC"
-genome(annotations) <- "hg38"
-Annotation(enhancer_obj) <- annotations
+genome(annotation) <- "hg38"
+Annotation(enhancer_obj) <- annotation
 
-chrom_assay <- CreateChromatinAssay(counts = counts, sep = c(":", "-"), genome = 'hg38',fragments = Fragments(atac)
+chrom_assay <- CreateChromatinAssay(counts = counts, sep = c(":", "-"), genome = 'hg38',fragments = Fragments(atac),
 min.cells = 0, min.features=0)
 enhancer_obj <- CreateSeuratObject(counts = chrom_assay,assay = "enhancers")
-enhancer_obj@meta.data=atac@meta.data[row.names(enhancer_obj)]
+enhancer_obj@meta.data=atac@meta.data[row.names(enhancer_obj),]
 SaveH5Seurat(enhancer_obj, filename = "F5_enhancer.h5Seurat")
 Convert("F5_enhancer.h5Seurat", dest = "h5ad")        ## Convert to h5ad format
