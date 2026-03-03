@@ -4,12 +4,12 @@ library(JASPAR2020)
 library(TFBSTools)
 library(BSgenome.Hsapiens.UCSC.hg38)
 library(patchwork)
-
+#set.seed(1234)
 setwd('/path/to/workdir/')
 seu <- readRDS("/path/to/rds")
 DefaultAssay(seu) <- "ATAC"
 main.chroms <- standardChromosomes(BSgenome.Hsapiens.UCSC.hg38)
-keep.peaks <- as.logical(seqnames(granges(seu)) %in% main.chroms)
+keep.peaks <- as.logical(seqnames(granges(seu[['ATAC']])) %in% main.chroms)
 seu <- seu[keep.peaks, ]
 pfm <- getMatrixSet(
   x = JASPAR2020,
