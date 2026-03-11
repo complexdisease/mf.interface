@@ -11,9 +11,9 @@ library(igraph)
 seu=readRDS("/path/to/rds/")
 setwd("/working/directories/")
 set.seed(9527)
-peaks=brain[['ATAC']]@ranges
-peaks=keepSeqlevels(peaks,seqlevels(peaks)[1:22],pruning.model='coarse')
-SE <- SummarizedExperiment(assays = list(counts = seu[['ATAC']]@counts[1:length(peaks),]),
+peaks=seu[['ATAC']]@ranges
+peaks=keepSeqlevels(peaks,seqlevels(peaks)[1:22],pruning.mode='coarse')
+SE <- SummarizedExperiment(assays = list(counts = seu[['ATAC']]@counts[names(peaks),]),
                            rowData = peaks, 
                            colData = seu@meta.data)
 SE <- addGCBias(SE, genome = BSgenome.Hsapiens.UCSC.hg38)
@@ -29,7 +29,7 @@ scale_factor <- cal_scalefactor(z_score = z_score_mat$z_score,
 peak_by_cell_mat <- SummarizedExperiment::assay(SE)
 tfidf_mat <- tfidf(bmat=peak_by_cell_mat, mat_binary=TRUE, TF=TRUE, log_TF=TRUE)
 lsi_mat=Embeddings(object = seu[["integrated_lsi"]])[,1:30]
-mutualknn30 <- getmutualknn(lsimat = lsi_mat2, 
+mutualknn30 <- getmutualknn(lsimat = lsi_mat, 
                             num_k = 30)
 np_score <- randomWalk_sparse(intM = mutualknn30, 
                               queryCells = rownames(mutualknn30)[seed_idx], 

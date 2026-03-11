@@ -68,7 +68,8 @@ perm_weights <- list()
 
 for (i in 1:n_perm) {
   permuted <- cellchat
-  permuted@idents <- sample(cellchat@idents)  # shuffle cell type labels
+  permuted@idents <- sample(cellchat@idents) # shuffle cell type labels
+  permuted <- updateCellChat(permuted)    
   permuted <- computeCommunProb(permuted)
   permuted <- computeCommunProbPathway(permuted)
   permuted <- aggregateNet(permuted)
@@ -77,14 +78,14 @@ for (i in 1:n_perm) {
 p_value <- mean(perm_weights >= observed_weight)
 pval_mat[testA,testB]=p_value
 }
-observed_weight=cellchat@net$weight
+observed_weight_mat=cellchat@net$weight
 
 tmp=array(0, dim = c(nrow(perm_weights[[1]]), ncol(perm_weights[[1]]), length(perm_weights)))
 for (i in 1:100){
-  tmp[,,i]=perm_mat[,,i]>=observed_weight
+  tmp[,,i]=perm_weights[,,i]>=observed_weight_mat
 }
 pval_mat=matrix(0,ncol = ncol(perm_weights[[1]]),nrow = nrow(perm_weights[[1]]))
-for (i in 1:100){
+for (i in 1:n_perm){
   pval_mat=pval_mat+tmp[,,i]
 }
 
